@@ -14,9 +14,9 @@ also discuss how to present data in table form.
 Figure titles and captions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-One critical components of every figure is the figure title. Every
-figure needs the title. The job of the title is to accurately convey to
-the reader what the figure is about, what point it makes. However, the
+One critical component of every figure is the figure title. Every figure
+needs the title. The job of the title is to accurately convey to the
+reader what the figure is about, what point it makes. However, the
 figure title may not necessarily appear where you were expecting to see
 it. Consider Figure @ref(fig:corruption-development). This figure is
 inspired by a posting in @Economist-corruption. I have recreated their
@@ -185,7 +185,7 @@ because it is labeled excessively. In particular, providing a unit
 Finally, in some cases it is acceptable to omit not only the axis title
 but the entire axis. Pie charts typically don't have explicit axes
 (e.g., Figure @ref(fig:bundestag-pie)), and neither do treemaps (Figure
-@ref(ref:bridges-treemap)). Mosaic plots or bar charts can be shown
+@ref(fig:bridges-treemap)). Mosaic plots or bar charts can be shown
 without one or both axes if the meaning of the plot is otherwise clear
 (Figures @ref(fig:bridges-mosaic) and
 @ref(fig:titanic-passengers-by-class-sex)). Omitting explicit axes with
