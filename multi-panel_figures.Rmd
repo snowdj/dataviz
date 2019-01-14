@@ -11,7 +11,7 @@ library(ggridges)
 
 When datasets become large and complex, they often contain much more information than can reasonably be shown in a single figure panel. To visualize such datasets, it can be helpful to create multi-panel figures. These are figures that consist of multiple figure panels where each one shows some subset of the data. There are two distinct categories of such figures: 1. Small multiples are plots consisting of multiple panels arranged in a regular grid. Each panel shows a different subset of the data but all panels use the same type of visualization. 2. Compound figures consist of separate figure panels assembled in an arbitrary arrangement (which may or may not be grid based) and showing entirely different visualizations, or possibly even different datasets. 
 
-We have encountered both types of multi-panel figures in many places throughout this book. In general, these figures are intuitive and straightforward to interpret. However, when preparing such figures, there are a few issues we need to pay attention to, and the purpose of this chapter is to make you aware of these issues.
+We have encountered both types of multi-panel figures in many places throughout this book. In general, these figures are intuitive and straightforward to interpret. However, when preparing such figures, there are a few issues we need to pay attention to, such as appropriate axis scaling, alignment, and consistency between separate panels.
 
 ## Small multiples
 
@@ -51,16 +51,26 @@ library(ggplot2movies)
 
 ggplot(filter(movies, year > 1905), aes(y = rating, x = votes)) + 
   geom_point(color = "#0072B250", size = 0.1) + 
-  geom_smooth(method = 'lm', se = FALSE, size = 1.25, color = '#D55E00',
-              fullrange = TRUE) + 
-  scale_x_log10(labels = label_log10, name = "number of votes") + 
-  scale_y_continuous(limits = c(0, 10), expand = c(0, 0),
-                     breaks = c(0, 5, 10), name = "average rating") + 
+  geom_smooth(
+    method = 'lm', se = FALSE, size = 1.25, color = '#D55E00',
+    fullrange = TRUE
+  ) + 
+  scale_x_log10(labels = label_log10, name = "number of votes", breaks = c(10, 1000, 100000)) + 
+  scale_y_continuous(
+    limits = c(0, 10), expand = c(0, 0),
+    breaks = c(0, 5, 10), name = "average rating"
+  ) + 
   facet_wrap(~year, ncol = 10) +
   theme_dviz_grid(10, rel_small = 1, line_size = 0.25) +
-  theme(strip.text = element_text(margin = margin(3.5, 3.5, 3.5, 3.5)),
-        panel.border = element_rect(colour = "grey80", fill = NA, linetype = 1,
-                                    size = 1.))
+  theme(
+    axis.ticks = element_blank(),
+    axis.ticks.length = unit(0, "pt"),
+    strip.text = element_text(margin = margin(3.5, 3.5, 3.5, 3.5)),
+    panel.border = element_rect(
+      colour = "grey80", fill = NA, linetype = 1, size = 1.
+    ),
+    plot.margin = margin(3, 5, 3, 1.5)
+  )
 ```
 
 For such large plots to be easily understandable, it is important that each panel uses the same axis ranges and scalings. The human mind expects this to be the case. When it is not, there is a good chance that a reader will mis-interpret what the figure shows. For example, consider Figure \@ref(fig:BA-degrees-variable-y-lims), which presents how the proportion of Bachelor's degrees in different degree areas has changed over time. The figure shows the nine degree areas that have represented, on average, more than 4% of all degrees between 1971 to 2015. The *y* axis of panel is scaled such that the curve for each degree field covers the entire *y*-axis range. As a consequence, a cursory examination of Figure \@ref(fig:BA-degrees-variable-y-lims) suggests that the nine degree areas are all equally popular and have all experienced variation in popularity of a similar magnitude.
@@ -86,11 +96,12 @@ p <- ggplot(BA_top_degrees, aes(year, perc)) +
   geom_line(color = "#0072B2") + 
   facet_wrap(~field, labeller = label_wrap_gen(width = 25), ncol = 3,
              scales = "free") +
-  ylab("percent") +
+  ylab("proportion of degrees") +
+  scale_y_continuous(labels = scales::percent_format(accuracy = .1)) +
   theme_dviz_hgrid() +
   theme(strip.text = element_text(margin = margin(7, 7, 3, 7)),
         panel.spacing.x = grid::unit(14, "pt"),
-        plot.margin = margin(3.5, 14, 3.5, 0)) 
+        plot.margin = margin(3.5, 14, 3.5, 1.5)) 
 
 stamp_bad(p)
 ```
@@ -104,12 +115,15 @@ ggplot(BA_top_degrees, aes(year, perc)) +
   geom_line(color = "#0072B2") + 
   facet_wrap(~field, labeller = label_wrap_gen(width = 25), ncol = 3,
              scales = "free") +
-  scale_y_continuous(limits = c(0, 0.241), expand = c(0, 0),
-                     name = "percent") +
+  scale_y_continuous(
+    limits = c(0, 0.241), expand = c(0, 0),
+    name = "proportion of degrees",
+    labels = scales::percent_format(accuracy = 1)
+  ) +
   theme_dviz_hgrid() +
   theme(strip.text = element_text(margin = margin(7, 7, 3, 7)),
         panel.spacing.x = grid::unit(14, "pt"),
-        plot.margin = margin(3.5, 14, 3.5, 0)) 
+        plot.margin = margin(3.5, 14, 3.5, 1.5)) 
 
 ```
 
@@ -148,7 +162,7 @@ p1 <- ggplot(BA_totals, aes(year, total/1e6)) +
   theme_dviz_hgrid() +
   theme(axis.title = element_text(color = textcol),
         axis.text = element_text(color = textcol),
-        plot.margin = margin(3, 7, 3, 0))
+        plot.margin = margin(3, 7, 3, 1.5))
 
 BA_df %>% group_by(field) %>%
   summarize(mean_perc = mean(perc)) %>%
@@ -168,10 +182,15 @@ p2 <- ggplot(BA_top_pairs, aes(x = year, y = perc)) +
                      expand = expand_scale(mult = c(0.1, 0.04)),
                      name = NULL,
                      position = "top") +
-  scale_y_continuous(limits = c(0.02, 0.22), expand = c(0, 0), name = "percent of degrees",
-                     sec.axis = dup_axis(breaks = filter(BA_top_pairs, year == 2015)$perc + 0.0001,
-                                         labels = filter(BA_top_pairs, year == 2015)$field_wrapped,
-                                         name = NULL)) +
+  scale_y_continuous(
+    limits = c(0.02, 0.22), expand = c(0, 0),
+    name = "proportion of degrees",
+    labels = scales::percent_format(accuracy = 1),
+    sec.axis = dup_axis(
+      breaks = filter(BA_top_pairs, year == 2015)$perc + 0.0001,
+      labels = filter(BA_top_pairs, year == 2015)$field_wrapped,
+      name = NULL)
+  ) +
   theme_dviz_open() +
   theme(axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
@@ -185,7 +204,7 @@ p2 <- ggplot(BA_top_pairs, aes(x = year, y = perc)) +
                                          ),
         axis.line.y.right = element_blank(),
         axis.ticks.y.right = element_blank(),
-        plot.margin = margin(3, 7, 3, 0))
+        plot.margin = margin(3, 7, 3, 1.5))
 
 plot_grid(p1, p2, labels = "auto", rel_widths = c(1.2, 1), align = 'h')
 ```
@@ -250,7 +269,7 @@ p2 <- ggplot(athletes_df, aes(x = rcc, y = wcc, shape = sex, color = sex, fill =
 p_row <- plot_grid(p1, p2, labels = "auto", align = 'h', rel_widths = c(0.7, 1)) +
   draw_text("RBC count", x = 1, y = 0, size = 12, hjust = 1, vjust = -0.02,
             family = dviz_font_family) + 
-  theme(plot.margin = margin(0, 0, 6, 0))
+  theme(plot.margin = margin(0, 1.5, 6, 1.5))
 
 p3 <- ggplot(athletes_df, aes(x = sport, y = pcBfat, color = fct_relevel(sex, "m"),
                               fill = fct_relevel(sex, "m"))) + 
@@ -262,13 +281,14 @@ p3 <- ggplot(athletes_df, aes(x = sport, y = pcBfat, color = fct_relevel(sex, "m
   scale_x_discrete(name = NULL) +
   scale_y_continuous(name = "% body fat") +
   theme_dviz_hgrid(12, rel_small = 1) +
-  theme(axis.line.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        #axis.ticks.length = grid::unit(0, "pt")
-        )
+  theme(
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank()
+    #axis.ticks.length = grid::unit(0, "pt")
+  )
 
 stamp_bad(plot_grid(p_row, p3, ncol = 1, labels = c("", "c")) +
-            theme(plot.margin = margin(6, 12, 0, 0)))
+            theme(plot.margin = margin(6, 12, 0, 1.5)))
 ```
 
 Figure \@ref(fig:athletes-composite-good) fixes all these issues. In this figure, female athletes are consistently shown in orange and to the left of male athletes, who are shown in blue. Notice how much easier it is to read this figure than Figure \@ref(fig:athletes-composite-inconsistent). When we use a consistent visual language, it doesn't take much mental effort to determine which visual elements in the different panels represent women and which men. Figure \@ref(fig:athletes-composite-inconsistent), on the other hand, can be quite confusing. In particular, on first glance it may generate the impression that men tend to have higher body fat percentages than women. Notice also that we need only a single legend in Figure \@ref(fig:athletes-composite-good) but needed two in Figure \@ref(fig:athletes-composite-inconsistent). Since the visual language is consistent, the same legend works for panels (b) and (c).
@@ -298,7 +318,7 @@ p2 <- ggplot(athletes_df, aes(x = rcc, y = wcc, fill = sex)) +
 p_row <- plot_grid(p1, p2, labels = "auto", align = 'h', rel_widths = c(0.7, 1)) +
   draw_text("RBC count", x = 1, y = 0, size = 12, hjust = 1, vjust = -0.02,
             family = dviz_font_family) + 
-  theme(plot.margin = margin(0, 0, 6, 0))
+  theme(plot.margin = margin(0, 1.5, 6, 1.5))
 
 GeomBP <- GeomBoxplot
 GeomBP$draw_key <- draw_key_polygon
@@ -321,7 +341,7 @@ p3 <- ggplot(athletes_df, aes(x = sport, y = pcBfat, color = sex, fill = sex)) +
         legend.justification = "right")
 
 plot_grid(p_row, p3, ncol = 1, labels = c("", "c")) +
-            theme(plot.margin = margin(6, 12, 0, 0))
+            theme(plot.margin = margin(6, 12, 0, 1.5))
 ```
 
 Finally, we need to pay attention to the alignment of individual figure panels in a compound figure. The axes and other graphical elements of the individual panels should all be aligned to each other. Getting the alignment right can be quite tricky, in particular if individual panels are prepared separately, possibly by different people and/or in different programs, and then pasted together in an image manipulation program. To draw your attention to such alignment issues, Figure \@ref(fig:athletes-composite-misaligned) shows a variation of Figure \@ref(fig:athletes-composite-good) where now all figure elements are slightly out of alignment. I have added axis lines to all panels of Figure \@ref(fig:athletes-composite-misaligned) to emphasize these alignment problems. Notice how no axis line is aligned with any other axis line for any other panel of the figure.
@@ -375,5 +395,5 @@ p3 <- ggplot(athletes_df, aes(x = sport, y = pcBfat, color = sex, fill = sex)) +
         legend.justification = "right")
 
 stamp_ugly(plot_grid(p_row, p3, ncol = 1, labels = c("", "c")) +
-            theme(plot.margin = margin(6, 12, 0, 0)))
+            theme(plot.margin = margin(6, 12, 0, 1.5)))
 ```

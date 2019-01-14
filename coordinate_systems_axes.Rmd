@@ -56,7 +56,7 @@ ggplot(df_points, aes(x, y)) +
 
 Data values usually aren't just numbers, however. They come with units. For example, if we're measuring temperature, the values may be measured in degrees Celsius or Fahrenheit. Similarly, if we're measuring distance, the values may be measured in kilometers or miles, and if we're measuring duration, the values may be measured in minutes, hours, or days. In a Cartesian coordinate system, the spacing between grid lines along an axis corresponds to discrete steps in these data units. In a temperature scale, for example, we may have a grid line every 10 degrees Fahrenheit, and in a distance scale, we may have a grid line every 5 kilometers.
 
-A Cartesian coordinate system can have two axes representing two different units. This situation arises quite commonly whenever we're mapping two different types of variables to *x* and *y*. For example, in Figure \@ref(fig:temp-normals-vs-time), we plotted temperature vs. days of the year. The *y* axis of Figure \@ref(fig:temp-normals-vs-time) is measured in degrees Fahrenheit, with a grid line every at 20 degrees, and the *x* axis is measured in months, with a grid line at the first of every third month. Whenever the two axes are measured in different units, we can stretch or compress one relative to the other and maintain a valid visualization of the data (Figure \@ref(fig:temperature-normals-Houston)). Which version is preferable may depend on the story we want to convey. A tall and narrow figure emphasizes change along the *y* axis and a short and wide figure does the opposite. Ideally, we want to choose an aspect ratio that provides a clear and accurate presentation of the data.
+A Cartesian coordinate system can have two axes representing two different units. This situation arises quite commonly whenever we're mapping two different types of variables to *x* and *y*. For example, in Figure \@ref(fig:temp-normals-vs-time), we plotted temperature vs. days of the year. The *y* axis of Figure \@ref(fig:temp-normals-vs-time) is measured in degrees Fahrenheit, with a grid line every at 20 degrees, and the *x* axis is measured in months, with a grid line at the first of every third month. Whenever the two axes are measured in different units, we can stretch or compress one relative to the other and maintain a valid visualization of the data (Figure \@ref(fig:temperature-normals-Houston)). Which version is preferable may depend on the story we want to convey. A tall and narrow figure emphasizes change along the *y* axis and a short and wide figure does the opposite. Ideally, we want to choose an aspect ratio that ensures that any important differences in position are noticeable.
 
 (ref:temperature-normals-Houston) Daily temperature normals for Houston, TX. Temperature is mapped to the *y* axis and day of the year to the *x* axis. Parts (a), (b), and (c) show the same figure in different aspect ratios. All three parts are valid visualizations of the temperature data. Data source: NOAA.
 
@@ -97,13 +97,13 @@ temp_plot <- ggplot(temps_wide_label, aes(x = date, y = `Houston`)) +
   scale_y_continuous(limits = c(50, 90),
                      name = "temperature (°F)") +
   theme_dviz_grid(12) +
-  theme(plot.margin = margin(3, 12, 12, 0))
+  theme(plot.margin = margin(3, 12, 12, 1.5))
 
 plot_grid(plot_grid(temp_plot, temp_plot, rel_widths = c(1, 2), labels = "auto"),
           temp_plot, rel_heights = c(1.5, 1), labels = c("", "c"), label_y = c(1, 1.15), ncol = 1)
 ```
 
-If on the other hand the *x* and the *y* axes are measured in the same units, then the grid spacings for the two axes should be equal, such that the same distance along the *x* or *y* axis corresponds to the same number of data units. As an example, we can plot the temperature in Houston, TX against the temperature in San Diego, CA, for every day of the year (Figure \@ref(fig:temperature-normals-Houston-San-Diego)a). Since the same quantity is plotted along both axes, we need to make sure that the grid lines form perfect squares, as is the case in Figure \@ref(fig:temperature-normals-Houston-San-Diego).
+On the other hand, if the *x* and the *y* axes are measured in the same units, then the grid spacings for the two axes should be equal, such that the same distance along the *x* or *y* axis corresponds to the same number of data units. As an example, we can plot the temperature in Houston, TX against the temperature in San Diego, CA, for every day of the year (Figure \@ref(fig:temperature-normals-Houston-San-Diego)a). Since the same quantity is plotted along both axes, we need to make sure that the grid lines form perfect squares, as is the case in Figure \@ref(fig:temperature-normals-Houston-San-Diego).
 
 (ref:temperature-normals-Houston-San-Diego) Daily temperature normals for Houston, TX, plotted versus the respective temperature normals of San Diego, CA. The first days of the months January, April, July, and October are highlighted to provide a temporal reference. (a) Temperatures are shown in degrees Fahrenheit. (b) Temperatures are shown in degrees Celsius. Data source: NOAA.
 
@@ -120,7 +120,7 @@ tempsplot_F <- ggplot(temps_wide_label, aes(x = `San Diego`, y = `Houston`)) +
   xlab("temperature in San Diego (°F)") +
   ylab("temperature in Houston (°F)") +
   theme_dviz_grid() +
-  theme(plot.margin = margin(3, 14, 3, 0))
+  theme(plot.margin = margin(3, 14, 3, 1.5))
 
 # Fahrenheit to Celsius conversion
 
@@ -138,7 +138,7 @@ tempsplot_C <- ggplot(temps_wide_label, aes(x = F2C(`San Diego`), y = F2C(`Houst
   xlab("temperature in San Diego (°C)") +
   ylab("temperature in Houston (°C)") +
   theme_dviz_grid() +
-  theme(plot.margin = margin(3, 14, 3, 0))
+  theme(plot.margin = margin(3, 14, 3, 1.5))
 
 
 plot_grid(tempsplot_F, tempsplot_C, labels = "auto")
@@ -167,7 +167,7 @@ xaxis_lin <- ggplot(df, aes(x, y = 1)) +
         axis.title.y = element_blank(),
         axis.ticks.y = element_blank(),
         plot.title = element_text(face = "plain"),
-        plot.margin = margin(3, 14, 3, 0))
+        plot.margin = margin(3, 14, 3, 1.5))
 
 xaxis_log <- ggplot(df, aes(log10(x), y = 1)) + 
   geom_point(size = 3, color = "#0072B2") + 
@@ -178,7 +178,7 @@ xaxis_log <- ggplot(df, aes(log10(x), y = 1)) +
         axis.title.y = element_blank(),
         axis.ticks.y = element_blank(),
         plot.title = element_text(face = "plain"),
-        plot.margin = margin(3, 14, 3, 0))
+        plot.margin = margin(3, 14, 3, 1.5))
 
 plotlist <- 
   align_plots(xaxis_lin + scale_x_continuous(limits = c(0, 100)) + 
@@ -198,6 +198,8 @@ plotlist <-
 plot_grid(plotlist[[1]], plotlist[[2]], plotlist[[3]], stamp_wrong(plotlist[[4]]), ncol = 1)
 
 ```
+
+Mathematically, there is no difference between plotting the log-transformed data on a linear scale or plotting the original data on a logarithmic scale (Figure \@ref(fig:linear-log-scales)). The only difference lies in the labeling for the individual axis ticks and for the axis as a whole. In most cases, the labeling for a logarithmic scale is preferable, because it places less mental burden on the reader to interpret the numbers shown as the axis tick labels. There is also less of a risk of confusion about the base of the logarithm. When working with log-transformed data, we can get confused about whether the data were transformed using the natural logarithm or the logarithm to base 10. And it's not uncommon for labeling to be ambiguous, e.g. "log(x)", which doesn't specify a base at all. I recommend that you always verify the base when working with log-transformed data. When plotting log-transformed data, always specify the base in the labeling of the axis.
 
 Because multiplication on a log scale looks like addition on a linear scale, log scales are the natural choice for any data that have been obtained by multiplication or division. In particular, ratios should generally be shown on a log scale. As an example, I have taken the number of inhabitants in each county in Texas and have divided it by the median number of inhabitants across all Texas counties. The resulting ratio is a number that can be larger or smaller than 1. A ratio of exactly 1 implies that the corresponding county has the median number of inhabitants. When visualizing these ratios on a log scale, we can see clearly that the population numbers in Texas counties are symmetrically distributed around the median, and that the most populous counties have over 100 times more inhabitants than the median while the least populous counties have over 100 times fewer inhabitants (Figure \@ref(fig:texas-counties-pop-ratio-log)). By contrast, for the same data, a linear scale obscures the differences between a county with median population number and a county with a much smaller population number than median (Figure \@ref(fig:texas-counties-pop-ratio-lin)).
 
@@ -227,7 +229,7 @@ ggplot(tx_counties, aes(x = index, y = popratio)) +
                      name = "Texas counties, from most to least populous") +
   theme_dviz_hgrid() +
   theme(axis.line = element_blank(),
-        plot.margin = margin(3, 7, 3, 0))
+        plot.margin = margin(3, 7, 3, 1.5))
 ```
 
 (ref:texas-counties-pop-ratio-lin) Population sizes of Texas counties relative to their median value. By displaying a ratio on a linear scale, we have overemphasized ratios > 1 and have obscured ratios < 1. As a general rule, ratios should not be displayed on a linear scale. Data source: 2010 Decennial U.S. Census.
@@ -243,7 +245,7 @@ counties_lin <- ggplot(tx_counties, aes(x = index, y = popratio)) +
                      name = "Texas counties, from most to least populous") +
   theme_dviz_hgrid() +
   theme(axis.line = element_blank(),
-        plot.margin = margin(3, 7, 3, 0))
+        plot.margin = margin(3, 7, 3, 1.5))
 
 stamp_bad(counties_lin)
 ```
@@ -266,7 +268,7 @@ xaxis_lin <- ggplot(df, aes(x, y = 1)) +
         axis.title.y = element_blank(),
         axis.ticks.y = element_blank(),
         plot.title = element_text(face = "plain"),
-        plot.margin = margin(3, 14, 3, 0))
+        plot.margin = margin(3, 14, 3, 1.5))
 
 xaxis_sqrt <- ggplot(df, aes(sqrt(x), y = 1)) + 
   geom_point(size = 3, color = "#0072B2") + 
@@ -277,7 +279,7 @@ xaxis_sqrt <- ggplot(df, aes(sqrt(x), y = 1)) +
         axis.title.y = element_blank(),
         axis.ticks.y = element_blank(),
         plot.title = element_text(face = "plain"),
-        plot.margin = margin(3, 14, 3, 0))
+        plot.margin = margin(3, 14, 3, 1.5))
 
 plotlist <- 
   align_plots(xaxis_lin + scale_x_continuous(limits = c(0, 50)) + 
@@ -321,7 +323,7 @@ areas_base <- ggplot(northeast_areas, aes(x = state_abr, y = area)) +
   ylab("area (square miles)") +
   xlab("state") +
   theme_dviz_hgrid() +
-  theme(plot.margin = margin(3, 14, 3, 0))
+  theme(plot.margin = margin(3, 14, 3, 1.5))
 
 p1 <- areas_base + scale_y_sqrt(limits = c(0, 55000), breaks = c(0, 1000, 5000, 10000*(1:5)), 
                                 expand = c(0, 0))
@@ -364,7 +366,7 @@ p_cart <- ggplot(df_points, aes(x, y)) +
   theme_dviz_grid(12) +
   theme(axis.ticks = element_blank(),
         axis.ticks.length = grid::unit(0, "pt"),
-        plot.margin = margin(3, 12, 3, 0))
+        plot.margin = margin(3, 12, 3, 1.5))
 
 
 p_polar <- ggplot(df_points, aes(x, y)) +
@@ -389,7 +391,7 @@ p_polar <- ggplot(df_points, aes(x, y)) +
   background_grid(major = "none") +
   theme(axis.line.x = element_blank(),
         axis.ticks = element_line(color = "black"),
-        plot.margin = margin(3, 12, 3, 0))
+        plot.margin = margin(3, 12, 3, 1.5))
 
 plot_grid(p_cart, p_polar, labels = "auto")
 ```
@@ -451,7 +453,7 @@ p_longlat <- ggplot(world_sf) +
     panel.background = element_rect(fill = "#56B4E950", color = "grey30", size = 0.5),
     panel.grid.major = element_line(color = "gray30", size = 0.25),
     axis.ticks = element_line(color = "gray30", size = 0.5/.pt),
-    plot.margin = margin(5, 10, 0, 1)
+    plot.margin = margin(5, 10, 1.5, 1.5)
   )
 
 
@@ -519,7 +521,7 @@ p_goode <- ggplot(world_sf) +
   theme(
     panel.background = element_rect(fill = "#56B4E950", color = "white", size = 1),
     panel.grid.major = element_line(color = "gray30", size = 0.25),
-    plot.margin = margin(0, 0, 24, 0)
+    plot.margin = margin(1.5, 1.5, 24, 1.5)
   )
 
 
@@ -571,7 +573,7 @@ p_robin <- ggplot(world_sf) +
   theme(
     panel.background = element_rect(fill = "#56B4E950", color = "white", size = 1),
     panel.grid.major = element_line(color = "gray30", size = 0.25),
-    plot.margin = margin(6, 0, 0, 0)
+    plot.margin = margin(6, 1.5, 1.5, 1.5)
   )
 
 
@@ -605,7 +607,7 @@ p_wintri <- ggplot() +
   coord_sf(datum = NA, expand = FALSE) +
   theme_dviz_grid(12, rel_small = 1) +
   theme(
-    plot.margin = margin(6, 0, 3, 0)
+    plot.margin = margin(6, 1.5, 3, 1.5)
   )
 
 p <- plot_grid(
@@ -616,5 +618,5 @@ p <- plot_grid(
   )
 )
 
-p
+p + theme(plot.margin = margin(1.5, 0, 0, 0))
 ```

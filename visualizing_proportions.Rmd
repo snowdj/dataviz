@@ -91,7 +91,7 @@ ggplot(bund_pie) +
   theme_dviz_map() +
   theme(
     legend.position = "none",
-    plot.margin = margin(3.5, 0, 3.5, 0)
+    plot.margin = margin(3.5, 1.5, 3.5, 1.5)
   )
 ```
 
@@ -105,30 +105,39 @@ bundestag <- mutate(bundestag,
 
 bt_bars_stacked_base <- ggplot(bundestag, aes(x = 1, y = seats, fill = factor(party, levels = rev(party)))) + 
   geom_col(position = "stack", color = "white") + 
-  geom_text(aes(x = 1., y = label_y, label = seats), 
-            size = main_size, family = dviz_font_family,
-            color = c("white", "white", "black")) +
+  geom_text(
+    aes(x = 1., y = label_y, label = seats), 
+    size = main_size, family = dviz_font_family,
+    color = c("white", "white", "black")
+  ) +
   scale_y_continuous(expand = c(0, 0)) +
   scale_x_discrete(expand = c(0, 0), breaks = NULL, name = NULL) +
   scale_fill_manual(values = rev(bundestag$colors), guide = "none")
 
 bt_bars_yax <- axis_canvas(bt_bars_stacked_base, axis = "y") +
-  geom_text(data = bundestag,
-            aes(x = 0.06, y = label_y, label = party),
-            hjust = 0, vjust = 0.5, size = small_size,
-            family = dviz_font_family) +
+  geom_text(
+    data = bundestag,
+    aes(x = 0.06, y = label_y, label = party),
+    hjust = 0, vjust = 0.5, size = small_size,
+    family = dviz_font_family
+  ) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1))
 
 bt_bars_stacked <- insert_yaxis_grob(
   bt_bars_stacked_base + 
     theme_dviz_hgrid() +
-    theme(plot.margin = margin(7, 0, 7, 0)),
+    theme(
+      axis.ticks = element_line(color = "gray70"),
+      plot.margin = margin(7, 1.5, 7, 1.5)
+    ),
   bt_bars_yax, grid::unit(.5, "null"))
 
 bt_bars_xax <- axis_canvas(bt_bars_stacked_base, axis = "y") +
-  geom_text(data = bundestag,
-            aes(x = 0., y = label_y, label = party, hjust = 0.5, vjust = 0, size = small_size),
-            family = dviz_font_family) +
+  geom_text(
+    data = bundestag,
+    aes(x = 0., y = label_y, label = party, hjust = 0.5, vjust = 0, size = small_size),
+    family = dviz_font_family
+  ) +
   scale_x_continuous(expand = c(0, 0), limits = c(0, 1)) +
   coord_flip()
 
@@ -136,12 +145,20 @@ bt_bars_hstacked <- insert_xaxis_grob(
   bt_bars_stacked_base + coord_flip() +
     scale_y_continuous(expand = c(0, 0), position = "right") +
     theme_dviz_vgrid() +
-    theme(plot.margin = margin(3, 0, 3, 3)),
+    theme(
+      axis.ticks = element_line(color = "gray70"),
+      plot.margin = margin(3, 1.5, 3, 3)
+    ),
   bt_bars_xax, grid::unit(14, "pt"), position = "bottom")
 
-plot_grid(bt_bars_stacked, plot_grid(NULL, bt_bars_hstacked, NULL,
-                                     ncol = 1, rel_heights = c(1, 6, 7.5)),
-          rel_widths = c(4, 7), labels = "auto")
+plot_grid(
+  bt_bars_stacked,
+  plot_grid(
+    NULL, bt_bars_hstacked, NULL,
+    ncol = 1, rel_heights = c(1, 6, 7.5)
+  ),
+  rel_widths = c(4, 7), labels = "auto"
+)
 ```
 
 We can also take the bars from Figure \@ref(fig:bundestag-stacked-bars)a and place them side-by-side rather than stacking them on top of each other. This visualization makes it easier to perform a direct comparison of the three groups, though it obscures other aspects of the data (Figure \@ref(fig:bundestag-bars-side-by-side)). Most importantly, in a side-by-side bar plot the relationship of each bar to the total is not visually obvious.
@@ -156,8 +173,12 @@ bt_bars <- ggplot(bundestag, aes(x = factor(party, levels = bundestag$party), y 
   scale_y_continuous(expand = c(0, 0)) +
   scale_fill_manual(values = bundestag$colors[order(bundestag$party)], guide = "none") + 
   #geom_hline(yintercept = c(50, 100, 150, 200), color = "#ffffff70", size = .5) +
+  coord_cartesian(clip = "off") +
   theme_dviz_hgrid() +
-  theme(axis.ticks.x = element_blank())
+  theme(
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
 
 bt_bars
 ```
@@ -196,7 +217,7 @@ of proportions
 
 ## A case for side-by-side bars {#side-by-side-bars}
 
-I will now demonstrate a case where pie charts fail. This example is modeled after a critique of pie charts originally posted on Wikipedia [@Schutz-piecharts]. Consider the hypothetical scenario of five companies, A, B, C, D, and E, who all have roughly comparable market share of approximately 20%. Our hypothetical dataset lists the marketshare of each company for three consecutive years. When we visualize this dataset with pie charts, it is difficult to see what exactly is going on (Figure \@ref(fig:marketshare-pies)). It appears that the market share of company A is growing and the one of company E is shrinking, but beyond this one observation we can't tell what's going on. In particular, it is unclear how exactly the market shares of the different companies compare within each year.
+I will now demonstrate a case where pie charts fail. This example is modeled after a critique of pie charts originally posted on Wikipedia [@Schutz-piecharts]. Consider the hypothetical scenario of five companies, A, B, C, D, and E, who all have roughly comparable market share of approximately 20%. Our hypothetical dataset lists the market share of each company for three consecutive years. When we visualize this dataset with pie charts, it is difficult to see what exactly is going on (Figure \@ref(fig:marketshare-pies)). It appears that the market share of company A is growing and the one of company E is shrinking, but beyond this one observation we can't tell what's going on. In particular, it is unclear how exactly the market shares of the different companies compare within each year.
 
 
 (ref:marketshare-pies) Market share of five hypothetical companies, A--E, for the years 2015--2017, visualized as pie charts. This visualization has two major problems: 1. A comparison of relative market share within years is nearly impossible. 2. Changes in market share across years are difficult to see.
@@ -246,10 +267,14 @@ The picture becomes a little clearer when we switch to stacked bars (Figure \@re
 ```{r marketshare-stacked, fig.cap='(ref:marketshare-stacked)'}
 stacked_bars <- ggplot(marketshare, aes(x = year, y = percent, fill = company)) + 
   geom_col(position = "stack") + 
-  scale_y_continuous(expand = c(0, 0)) +
+  scale_y_continuous(
+    name = "market share",
+    labels = scales::percent_format(accuracy = 1, scale = 1),
+    expand = c(0, 0)
+  ) +
   scale_fill_OkabeIto(order = c(1:3, 5, 4)) + 
   theme_dviz_open() +
-  theme(plot.margin = margin(14, 7, 3, 0))
+  theme(plot.margin = margin(14, 7, 3, 1.5))
 
 stamp_bad(stacked_bars)
 ```
@@ -262,7 +287,11 @@ For this hypothetical data set, side-by-side bars are the best choice (Figure \@
 ggplot(marketshare, aes(x = company, y = percent, fill = company)) + 
   geom_col() + 
   facet_wrap(~year) +
-  scale_y_continuous(expand = c(0, 0)) +
+  scale_y_continuous(
+    name = "market share",
+    labels = scales::percent_format(accuracy = 1, scale = 1),
+    expand = c(0, 0)
+  ) +
   scale_fill_OkabeIto(order = c(1:3, 5, 4), guide = "none") + 
   theme_dviz_open() +
   theme(strip.background = element_blank())
@@ -271,7 +300,7 @@ ggplot(marketshare, aes(x = company, y = percent, fill = company)) +
 
 ## A case for stacked bars and stacked densities {#stacked-densities}
 
-In Section \@ref(side-by-side-bars), I wrote that I don't normally recommend sequences of stacked bars, because the location of the internal bars shifts along the sequence. However, the problem of shifting internal bars disappears if there are only two bars in each stack, and in those cases the resulting visualization can be quite clear. As an example, consider the proportion of women in a country's national parliament. We will specifically look at the African country Rwanda, which as of 2016 tops the list of countries with the highest proportion of female parliament members. Rwanda has had a majority female parliament since 2008, and since 2013 nearly two-thirds of its members of parliament are female. To visualize how the proportion of women in the Rwandan parliament has changed over time, we can draw a sequence of stacked bar graphs (Figure \@ref(fig:women-parliament)). This figure provides an immediate visual representation of the changing proportions over time. To help the reader see exactly when the majority turned female, I have added a thin horizontal line at 50%. Without this line, it would be near impossible to determine whether from 2003 to 2007 the majority was male or female. I have not added similar lines at 25% and 75%, to avoid making the figure too cluttered.
+In Section \@ref(side-by-side-bars), I wrote that I don't normally recommend sequences of stacked bars, because the location of the internal bars shifts along the sequence. However, the problem of shifting internal bars disappears if there are only two bars in each stack, and in those cases the resulting visualization can be quite clear. As an example, consider the proportion of women in a country's national parliament. We will specifically look at the African country Rwanda, which as of 2016 tops the list of countries with the highest proportion of female parliament members. Rwanda has had a majority female parliament since 2008, and since 2013 nearly two-thirds of its members of parliament are female. To visualize how the proportion of women in the Rwandan parliament has changed over time, we can draw a sequence of stacked bar graphs (Figure \@ref(fig:women-parliament)). This figure provides an immediate visual representation of the changing proportions over time. To help the reader see exactly when the majority turned female, I have added a dashed horizontal line at 50%. Without this line, it would be near impossible to determine whether from 2003 to 2007 the majority was male or female. I have not added similar lines at 25% and 75%, to avoid making the figure too cluttered.
 
 (ref:women-parliament) Change in the gender composition of the Rwandan parliament over time, 1997 to 2016. Data source: Inter-Parliamentary Union (IPU), ipu.org.
 
@@ -290,17 +319,29 @@ women_parliaments %>% filter(country_code == ccode & year > 1990) %>%
 
 plot_base <- ggplot(women_rwanda, aes(x = year, y = percent, fill = gender)) +
     #geom_col(position = "stack", width = .9, color = "white") +
-    geom_col(position = "stack", width = 1, color = "white", size = .75) +
-    geom_hline(yintercept = c(50), color = "#FFFFFFA0") +
+    geom_col(position = "stack", width = 1, color = "#FFFFFF", size = .75, alpha = 0.8) +
+    geom_hline(
+      yintercept = c(50),
+      color = "#000000FF", size = 0.4, linetype = 2
+      #color = "#FFFFFFA0"
+    ) +
+    geom_hline(yintercept = 100, color = "black") +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_continuous(expand = c(0, 0)) +
+    scale_y_continuous(
+      name = "relative proportion",
+      labels = scales::percent_format(accuracy = 1, scale = 1),
+      expand = c(0, 0)
+    ) +
     scale_fill_manual(values = c("#D55E00E0", "#0072B2E0"), guide = "none") +
+    coord_cartesian(clip = "off") +
     theme_dviz_open() + 
-    theme(#axis.ticks.y = element_blank(),
-          #axis.ticks.x = element_blank(),
-          #axis.line.x = element_blank(),
-          axis.line.y = element_blank(),
-          plot.margin = margin(14, 0, 3, 0))
+    theme(
+      #axis.ticks.y = element_blank(),
+      #axis.ticks.x = element_blank(),
+      #axis.line.x = element_blank(),
+      axis.line.y = element_blank(),
+      plot.margin = margin(14, 1.5, 3, 1.5)
+    )
 
 # calculate label position
 labels <- filter(women_rwanda, year == max(year)) %>%
@@ -331,17 +372,21 @@ colors = c('#f1eef6', '#bdc9e1', '#74a9cf', '#2b8cbe', '#045a8d')[5:1]
 p_health <- ggplot(df_health, aes(x = age, y = ..count.., fill = health, color = health)) + 
   geom_density(position = "fill") +
   #geom_hline(yintercept = c(.25, .50, .75), color = "#FFFFFF60") +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0), name = "percent",
-                     labels = c(0, 25, 50, 75, 100)) + 
+  scale_x_continuous(name = "age (years)", expand = c(0, 0)) +
+  scale_y_continuous(
+    expand = c(0, 0), name = "relative proportion",
+    labels = scales::percent
+  ) + 
   scale_color_manual(values = colors) + 
   scale_fill_manual(values = colors) +
   theme_dviz_open() + 
-  theme(#axis.ticks.y = element_blank(),
-        #axis.ticks.x = element_blank(),
-        axis.line.x = element_blank(),
-        axis.line.y = element_blank(),
-        plot.margin = margin(7, 7, 3, 0))
+  theme(
+    #axis.ticks.y = element_blank(),
+    #axis.ticks.x = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    plot.margin = margin(7, 7, 3, 1.5)
+  )
 
 df_marital <- select(happy, age, marital) %>%
   na.omit() %>%
@@ -350,16 +395,20 @@ df_marital <- select(happy, age, marital) %>%
 
 p_marital <- ggplot(df_marital, aes(x = age, y = ..count.., fill = marital, color = marital)) + 
   geom_density(position = "fill") +
-  scale_x_continuous(expand = c(0, 0)) +
-  scale_y_continuous(expand = c(0, 0), name = "percent",
-                     labels = c(0, 25, 50, 75, 100)) + 
+  scale_x_continuous(name = "age (years)", expand = c(0, 0)) +
+  scale_y_continuous(
+    expand = c(0, 0), name = "relative proportion",
+    labels = scales::percent
+  ) + 
   scale_color_manual(values = colors, name = "marital status") + 
   scale_fill_manual(values = colors, name = "marital status") +
   theme_dviz_open() + 
-  theme(#axis.ticks.y = element_blank(),
-        axis.line.x = element_blank(),
-        axis.line.y = element_blank(),
-        plot.margin = margin(7, 7, 3, 0))
+  theme(
+    #axis.ticks.y = element_blank(),
+    axis.line.x = element_blank(),
+    axis.line.y = element_blank(),
+    plot.margin = margin(7, 7, 3, 1.5)
+  )
 
 p_aligned <- align_plots(p_health, p_marital, align = 'v')
 ggdraw(p_aligned[[1]])
@@ -379,15 +428,25 @@ ggplot(mutate(df_health, health = fct_rev(health)), aes(x = age, y = ..count..))
   geom_density_line(data = select(df_health, -health), aes(fill = "all people surveyed   "), color = "transparent") +
   geom_density_line(aes(fill = "highlighted group"), color = "transparent") +
   facet_wrap(~health, nrow = 1) +
-  scale_x_continuous(limits = c(15, 98), expand = c(0, 0)) +
+  scale_x_continuous(name = "age (years)", limits = c(15, 98), expand = c(0, 0)) +
   scale_y_continuous(name = "count", expand = c(0, 0)) +
-  scale_fill_manual(values = c("#b3b3b3a0", "#2b8cbed0"), name = "") +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  coord_cartesian(clip = "off") +
   theme_dviz_hgrid() +
-  theme(strip.text = element_text(margin = margin(0, 0, 0.2, 0, "cm")),
-        legend.position = "bottom",
-        legend.justification = "right",
-        legend.margin = margin(0, 0, 0.2, 0, "cm"),
-        legend.spacing.x = grid::unit(0.2, "cm"))
+  theme(
+    axis.line.x = element_blank(),
+    strip.text = element_text(margin = margin(0, 0, 0.2, 0, "cm")),
+    legend.position = "bottom",
+    legend.justification = "right",
+    legend.margin = margin(0, 0, 0.2, 0, "cm"),
+    legend.spacing.x = grid::unit(4.5, "pt"),
+    legend.spacing.y = grid::unit(0, "cm"),
+    legend.box.spacing = grid::unit(0, "cm")
+  )
 ```
 
 
@@ -409,24 +468,86 @@ ggplot(mutate(df_marital, marital = fct_rev(marital)), aes(x = age, y = ..count.
   geom_density_line(data = select(df_marital, -marital), aes(fill = "all people surveyed  "), color = "transparent") +
   geom_density_line(aes(fill = "highlighted group"), color = "transparent") +
   facet_wrap(~marital, nrow = 1) +
-  scale_x_continuous(limits = c(15, 98), expand = c(0, 0)) +
+  scale_x_continuous(name = "age (years)", limits = c(15, 98), expand = c(0, 0)) +
   scale_y_continuous(name = "count", expand = c(0, 0)) +
-  scale_fill_manual(values = c("#b3b3b3a0", "#2b8cbed0"), name = "") +
+  scale_fill_manual(
+    values = c("#b3b3b3a0", "#2b8cbed0"),
+    name = NULL,
+    guide = guide_legend(direction = "horizontal")
+  ) +
+  coord_cartesian(clip = "off") +
   theme_dviz_hgrid() +
-  theme(strip.text = element_text(margin = margin(0, 0, 0.2, 0, "cm")),
-        legend.position = "bottom",
-        legend.justification = "right",
-        legend.margin = margin(0, 0, 0.2, 0, "cm"),
-        legend.spacing.x = grid::unit(0.2, "cm"))
+  theme(
+    axis.line.x = element_blank(),
+    strip.text = element_text(margin = margin(0, 0, 0.2, 0, "cm")),
+    legend.position = "bottom",
+    legend.justification = "right",
+    legend.margin = margin(0, 0, 0.2, 0, "cm"),
+    legend.spacing.x = grid::unit(4.5, "pt"),
+    legend.spacing.y = grid::unit(0, "cm"),
+    legend.box.spacing = grid::unit(0, "cm")
+  )
 ```
 
+However, one downside of Figure \@ref(fig:marital-vs-age-facets) is that this representation doesn't make it easy to determine relative proportions at any given point in time. For example, if we wanted to know at what age more than 50% of all people surveyed are married, we could not easily tell from Figure \@ref(fig:marital-vs-age-facets). To answer this question, we can instead use the same type of display but show relative proportions instead of absolute counts along the *y* axis (Figure \@ref(fig:marital-vs-age-proportions)). Now we see that married people are in the majority starting in their late 20s, and widowed people are in the majority starting in their mid 70s.
 
+(ref:marital-vs-age-proportions) Marital status by age, shown as proportion of the total number of people in the survey. The areas colored in blue show the percent of people at the given age with the respective status, and the areas colored in gray show the percent of people with all other marital statuses.
 
-```{r}
+```{r marital-vs-age-proportions, fig.width = 8.5, fig.asp = 0.35, fig.cap='(ref:marital-vs-age-proportions)'}
+df_marital2 <- rbind(
+  mutate(df_marital,
+    marital = as.character(fct_collapse(marital, `never married` = "never married", aother = c("married", "divorced", "widowed"))),
+    highlight = "never married"
+  ),
+  mutate(df_marital,
+    marital = as.character(fct_collapse(marital, married = "married", aother = c("never married", "divorced", "widowed"))),
+    highlight = "married"
+  ),
+  mutate(df_marital,
+    marital = as.character(fct_collapse(marital, divorced = "divorced", aother = c("never married", "married", "widowed"))),
+    highlight = "divorced"
+  ),
+  mutate(df_marital,
+    marital = as.character(fct_collapse(marital, widowed = "widowed", aother = c("never married", "married", "divorced"))),
+    highlight = "widowed"
+  )
+) %>%
+  mutate(
+    highlight = factor(highlight, levels = c("never married", "married", "divorced", "widowed"))
+  )
 
-# **Additional ideas, for a separate chapter on nested proportions: treemaps and Sankey diagrams.**
-
-#Notes:
-#  https://github.com/wilkox/treemapify
-#  Also possibly use survival on Titanic, as.data.frame(Titanic)
+ggplot(df_marital2, aes(age)) +
+  annotate(geom = "rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf, fill = "#b3b3b3a0", color = NA) +
+  geom_density_line(
+    aes(y = stat(count), fill = marital), color = "transparent", position = "fill"
+  ) +
+  facet_wrap(~highlight, nrow = 1) +
+  scale_x_continuous(
+    name = "age (years)",
+    #limits = c(15, 98), 
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(name = "relative proportion", expand = c(0, 0), labels = scales::percent) +
+  scale_fill_manual(
+    values = c("transparent", "#2b8cbed0", "#2b8cbed0", "#2b8cbed0", "#2b8cbed0"),
+    name = NULL,
+    breaks = c("aother", "divorced"),
+    labels = c("all people surveyed  ", "highlighted group"),
+    guide = guide_legend(
+      direction = "horizontal",
+      override.aes = list(fill = c("#bebebe", "#3590c0"))
+    )
+  ) +
+  coord_cartesian(clip = "off") +
+  theme_dviz_hgrid() +
+  theme(
+    axis.line.x = element_blank(),
+    strip.text = element_text(margin = margin(0, 0, 0.2, 0, "cm")),
+    legend.position = "bottom",
+    legend.justification = "right",
+    legend.margin = margin(0, 0, 0.2, 0, "cm"),
+    legend.spacing.x = grid::unit(4.5, "pt"),
+    legend.spacing.y = grid::unit(0, "cm"),
+    legend.box.spacing = grid::unit(0, "cm")
+  )
 ```
