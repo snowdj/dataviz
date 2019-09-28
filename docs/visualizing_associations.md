@@ -33,7 +33,7 @@ Because the head length is defined as the distance from the tip of the bill to t
 
 
 <div class="figure" style="text-align: center">
-<img src="visualizing_associations_files/figure-html/blue-jays-scatter-bubbles-1.png" alt="(ref:blue-jays-scatter-bubbles)" width="480" />
+<img src="visualizing_associations_files/figure-html/blue-jays-scatter-bubbles-1.png" alt="(ref:blue-jays-scatter-bubbles)" width="754.285714285714" />
 <p class="caption">(\#fig:blue-jays-scatter-bubbles)(ref:blue-jays-scatter-bubbles)</p>
 </div>
 
@@ -47,7 +47,7 @@ As an alternative to a bubble chart, it may be preferable to show an all-against
 
 
 <div class="figure" style="text-align: center">
-<img src="visualizing_associations_files/figure-html/blue-jays-scatter-all-1.png" alt="(ref:blue-jays-scatter-all)" width="576" />
+<img src="visualizing_associations_files/figure-html/blue-jays-scatter-all-1.png" alt="(ref:blue-jays-scatter-all)" width="685.714285714286" />
 <p class="caption">(\#fig:blue-jays-scatter-all)(ref:blue-jays-scatter-all)</p>
 </div>
 
@@ -59,7 +59,7 @@ When we have more than three to four quantiative variables, all-against-all scat
 (ref:correlations) Examples of correlations of different magnitude and direction, with associated correlation coefficient *r*. In both rows, from left to right correlations go from weak to strong. In the top row the correlations are positive (larger values for one quantity are associated with larger values for the other) and in the bottom row they are negative (larger values for one quantity are associated with smaller values for the other). In all six panels, the sets of *x* and *y* values are identical, but the pairings between individual *x* and *y* values have been reshuffled to generate the specified correlation coefficients.
 
 <div class="figure" style="text-align: center">
-<img src="visualizing_associations_files/figure-html/correlations-1.png" alt="(ref:correlations)" width="576" />
+<img src="visualizing_associations_files/figure-html/correlations-1.png" alt="(ref:correlations)" width="685.714285714286" />
 <p class="caption">(\#fig:correlations)(ref:correlations)</p>
 </div>
 
@@ -99,7 +99,7 @@ There are many techniques for dimension reduction. I will discuss only one techn
 (ref:blue-jays-PCA) Example principal components (PC) analysis in two dimensions. (a) The original data. As example data, I am using the head-length and skull-size measurements from the blue jays dataset. Female and male birds are distinguished by color, but this distinction has no effect on the PC analysis. (b) As the first step in PCA, we scale the original data values to zero mean and unit variance. We then we define new variables (the principal components, PCs) along the directions of maximum variation in the data. (c) Finally, we project the data into the new coordinates. Mathematically, this projection is equivalent to a rotation of the data points around the origin. In the 2D example shown here, the data points are rotated clockwise by 45 degrees. 
 
 <div class="figure" style="text-align: center">
-<img src="visualizing_associations_files/figure-html/blue-jays-PCA-1.png" alt="(ref:blue-jays-PCA)" width="816" />
+<img src="visualizing_associations_files/figure-html/blue-jays-PCA-1.png" alt="(ref:blue-jays-PCA)" width="754.285714285714" />
 <p class="caption">(\#fig:blue-jays-PCA)(ref:blue-jays-PCA)</p>
 </div>
 
@@ -120,15 +120,15 @@ Next, we project the original data into the principal components space (Figure \
 
 
 <div class="figure" style="text-align: center">
-<img src="visualizing_associations_files/figure-html/forensic-PCA-1.png" alt="(ref:forensic-PCA)" width="576" />
+<img src="visualizing_associations_files/figure-html/forensic-PCA-1.png" alt="(ref:forensic-PCA)" width="685.714285714286" />
 <p class="caption">(\#fig:forensic-PCA)(ref:forensic-PCA)</p>
 </div>
 
 ## Paired data {#associations-paired-data}
 
-A special case of multivariate quantitative data is paired data: Data where there are two or more measurements of the same quantity under slightly different conditions. Examples include two comparable measurements on each subject (e.g., the length of the right and the left arm of a person), repeat measurements on the same subject at different time points (e.g., a person's weight at two different times during the year), or measurements on two closely related subjects (e.g., the heights of two identical twins). For paired data, our null hypothesis is that each pair of measurements is identical or nearly so, whereas there is substantial variation between pairs. Two twins will be approximately of the same height but will differ in height from other twins. Therefore, we need to choose visualizations that highlight deviations from this null hypothesis.
+A special case of multivariate quantitative data is paired data: Data where there are two or more measurements of the same quantity under slightly different conditions. Examples include two comparable measurements on each subject (e.g., the length of the right and the left arm of a person), repeat measurements on the same subject at different time points (e.g., a person's weight at two different times during the year), or measurements on two closely related subjects (e.g., the heights of two identical twins). For paired data, it is reasonable to assume that the two measurements belonging to a pair are more similar to each other than to the measurements belonging to other pairs. Two twins will be approximately of the same height but will differ in height from other twins. Therefore, for paired data, we need to choose visualizations that highlight any differences between the paired measurements.
 
-An excellent choice for paired data is a simple scatter plot on top of a diagonal line marking *x* = *y*. If our null hypothesis is true, all points in the sample will be scattered symmetrically around this line. A systematic deviation from the null hypothesis, by contrast, will be visible in a systematic shift of the data points up or down relative to the diagonal. As an example, consider the carbon dioxide (CO<sub>2</sub>) emissions per person, measured for 166 countries both in 1970 and in 2010 (Figure \@ref(fig:CO2-paired-scatter)). This example highlights two common features of paired data. First, most points are relatively close to the diagonal line. Even though CO<sub>2</sub> emissions vary over nearly four orders of magnitude among countries, they are fairly consistent within each country over a 40-year time span. Second, the points are systematically shifted upwards relative to the diagonal line. The majority of countries has seen an increase in CO<sub>2</sub> emissions over the 40 years considered.
+An excellent choice in this case is a simple scatter plot on top of a diagonal line marking *x* = *y*. In such a plot, if the only difference between the two measurements of each pair is random noise, then all points in the sample will be scattered symmetrically around this line. Any systematic differences between the paired measurements, by contrast, will be visible in a systematic shift of the data points up or down relative to the diagonal. As an example, consider the carbon dioxide (CO<sub>2</sub>) emissions per person, measured for 166 countries both in 1970 and in 2010 (Figure \@ref(fig:CO2-paired-scatter)). This example highlights two common features of paired data. First, most points are relatively close to the diagonal line. Even though CO<sub>2</sub> emissions vary over nearly four orders of magnitude among countries, they are fairly consistent within each country over a 40-year time span. Second, the points are systematically shifted upwards relative to the diagonal line. The majority of countries has seen an increase in CO<sub>2</sub> emissions over the 40 years considered.
 
 (ref:CO2-paired-scatter) Carbon dioxide (CO<sub>2</sub>) emissions per person in 1970 and 2010, for 166 countries. Each dot represents one country. The diagonal line represents identical CO<sub>2</sub> emissions in 1970 and 2010. The points are systematically shifted upwards relative to the diagonal line: In the majority of countries, emissions were higher in 2010 than in 1970. Data source: Carbon Dioxide Information Analysis Center
 
